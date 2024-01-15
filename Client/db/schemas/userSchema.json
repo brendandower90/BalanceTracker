@@ -1,0 +1,32 @@
+{
+    "users": [
+        1,
+        {
+            "name": "brendan",
+            "coins": {
+                "btc": {
+                    "address": "bgh25642335",
+                    "balance": 0.5
+                },
+                "xrp": {
+                    "address": "r52873259834",
+                    "balance": 589,
+                    "tokens": [
+                        "evrs",
+                        "csc",
+                        "solo"
+                    ]
+                },
+                "eth": {
+                    "address": "0xab853d38e0fc",
+                    "balance": 0.015,
+                    "tokens": [
+                        "link",
+                        "gala",
+                        "propy"
+                    ]
+                }
+            }
+        }
+    ]
+}
