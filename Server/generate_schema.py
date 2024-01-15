@@ -55,6 +55,8 @@ def main(num_of_coins, update):
     schema_filename = f'{schema_filepath}coinSchema{num_of_coins}.json'
     schemaExists = does_schema_exist(schema_filename)
 
+    common_coin_list_sizes = [10, 20, 50, 100, 150, 200]
+
     if not schemaExists or update:
         #Get Schema and ranking from Coingecko
         coingecko_schema = get_coingecko_schema()
@@ -64,6 +66,10 @@ def main(num_of_coins, update):
         ranked_schema = sort_and_slice_schema(ranked_schema, 250)
 
         save_to_json(ranked_schema, schema_filename)
+
+        for list_size in common_coin_list_sizes:
+            schema = sort_and_slice_schema(ranked_schema, list_size)
+            save_to_json(schema, f'{schema_filepath}coinSchema{list_size}.json')
 
 
 
