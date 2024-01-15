@@ -2,6 +2,7 @@ import os, argparse, traceback
 import requests, json
 
 DEBUG = True
+MAX_COINS = 250
 
 def get_coingecko_ranking(limit=250):
     api_url = 'https://api.coingecko.com/api/v3/coins/markets'
@@ -52,30 +53,38 @@ def save_to_json(data, filename):
 
 def main(num_of_coins, update):
     schema_filepath = "Server/schemas/"
+    schema_max_filename = f'{schema_filepath}coinSchema{MAX_COINS}.json'
     schema_filename = f'{schema_filepath}coinSchema{num_of_coins}.json'
-    schemaExists = does_schema_exist(schema_filename)
+    schema_max_exists = does_schema_exist(schema_max_filename)
 
     common_coin_list_sizes = [10, 20, 50, 100, 150, 200]
 
-    if not schemaExists or update:
+    if not schema_max_exists or update:
         #Get Schema and ranking from Coingecko
         coingecko_schema = get_coingecko_schema()
         coingecko_ranks = get_coingecko_ranking()
 
         ranked_schema = filter_and_rank_schema(coingecko_schema, coingecko_ranks)
-        ranked_schema = sort_and_slice_schema(ranked_schema, 250)
+        ranked_schema = sort_and_slice_schema(ranked_schema, MAX_COINS)
 
-        save_to_json(ranked_schema, schema_filename)
+        save_to_json(ranked_schema, schema_max_filename)
 
         for list_size in common_coin_list_sizes:
-            schema = sort_and_slice_schema(ranked_schema, list_size)
-            save_to_json(schema, f'{schema_filepath}coinSchema{list_size}.json')
+            filename = f'{schema_filepath}coinSchema{list_size}.json'
+            if not does_schema_exist(filename):
+                schema = sort_and_slice_schema(ranked_schema, list_size)
+                save_to_json(schema, filename)
 
+    if num_of_coins != 250:
+        with open(schema_max_filename, 'r') as file:
+            full_schema = json.load(file)
+            ranked_schema = sort_and_slice_schema(full_schema, num_of_coins)
+            save_to_json(ranked_schema, schema_filename)
 
 
 if __name__ == "__main__":
     try:
-        main(250, True)
+        main(120, False)
     except KeyboardInterrupt:
         exit(0)
     except Exception as e:
