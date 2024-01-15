@@ -82,9 +82,17 @@ def main(num_of_coins, update):
             save_to_json(ranked_schema, schema_filename)
 
 
+def parseArgs():
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--num_of_coins', type=int, default=250, help='Number of coins to include in the schema.')
+    parser.add_argument('--update', default=False, action='store_true', help='Update the coin schema')
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     try:
-        main(120, False)
+        args = parseArgs()
+        main(args.num_of_coins, args.update)
     except KeyboardInterrupt:
         exit(0)
     except Exception as e:

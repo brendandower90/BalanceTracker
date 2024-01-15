@@ -9,7 +9,9 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
-            // "args": ["--update"],
+            "args": ["--num_of_coins", "120",
+                    //  "--update"
+                    ],
             "console": "integratedTerminal",
             "justMyCode": true
         }
