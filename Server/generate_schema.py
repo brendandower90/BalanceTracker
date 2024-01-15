@@ -84,7 +84,7 @@ def main(num_of_coins, update):
 
 def parseArgs():
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--num_of_coins', type=int, default=250, help='Number of coins to include in the schema.')
+    parser.add_argument('--num_of_coins', type=int, default=MAX_COINS, help='Number of coins to include in the schema.')
     parser.add_argument('--update', default=False, action='store_true', help='Update the coin schema')
     return parser.parse_args()
 
