@@ -3,6 +3,20 @@ import requests, json
 
 DEBUG = True
 
+def get_coingecko_ranking(limit=250):
+    api_url = 'https://api.coingecko.com/api/v3/coins/markets'
+    params = {
+        'vs_currency': 'usd',
+        'order': 'market_cap_desc',
+        'per_page': limit,
+        'page': 1,
+        'sparkline': False,
+        'locale': 'en'
+    }
+    response = requests.get(api_url, params=params)
+    data = response.json()
+    return [{"rank": coin["market_cap_rank"], "id": coin["id"]} for coin in data]
+
 def get_coingecko_schema():
     api_url = 'https://api.coingecko.com/api/v3/coins/list'
     headers = {'Accept': 'application/json'}
@@ -11,30 +25,51 @@ def get_coingecko_schema():
     data = response.json()
     return {"Coins":data}
 
+
+def sort_and_slice_schema(schema, num_coins):
+    sorted_schema = sorted(schema, key=lambda x: x['rank'])
+    return sorted_schema[:num_coins]
+
+
+def filter_and_rank_schema(coingecko_schema, top_coins_ranking):
+    top_coins_ids = set(coin['id'] for coin in top_coins_ranking)
+    filtered_schema = [coin for coin in coingecko_schema['Coins'] if coin['id'] in top_coins_ids]
+    
+    # Add the rank to each coin in the schema
+    for coin in filtered_schema:
+        coin['rank'] = next(item['rank'] for item in top_coins_ranking if item['id'] == coin['id'])
+    return filtered_schema
+
+
 def does_schema_exist(filename):
     return os.path.isfile(filename)
+
 
 def save_to_json(data, filename):
     with open(filename, 'w') as file:
         json.dump(data, file, indent=4)  # `indent=4` for pretty printing
 
 
-def main(update):
+def main(num_of_coins, update):
     schema_filepath = "Server/schemas/"
-    schema_filename = f'{schema_filepath}coinSchemaAll.json'
+    schema_filename = f'{schema_filepath}coinSchema{num_of_coins}.json'
     schemaExists = does_schema_exist(schema_filename)
 
     if not schemaExists or update:
-        #Get Schema from Coingecko
+        #Get Schema and ranking from Coingecko
         coingecko_schema = get_coingecko_schema()
+        coingecko_ranks = get_coingecko_ranking()
 
-        save_to_json(coingecko_schema, schema_filename)
+        ranked_schema = filter_and_rank_schema(coingecko_schema, coingecko_ranks)
+        ranked_schema = sort_and_slice_schema(ranked_schema, 250)
+
+        save_to_json(ranked_schema, schema_filename)
 
 
 
 if __name__ == "__main__":
     try:
-        main(True)
+        main(250, True)
     except KeyboardInterrupt:
         exit(0)
     except Exception as e:
