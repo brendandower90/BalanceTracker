@@ -1,2 +1,2 @@
 # BalanceTracker
-Appl to get your real-time balance on multiple crypto networks
+App to get your real-time balance on multiple crypto networks
