@@ -16,6 +16,7 @@
   "dependencies": {
     "erc-20-abi": "^1.0.0",
     "node-lmdb": "^0.10.0",
-    "viem": "^1.21.1"
+    "viem": "^1.21.1",
+    "xrpl-client": "^2.3.0"
   }
 }
