@@ -89,7 +89,7 @@ async function logTokenBalances() {
   }
 }
 
-export function GetEtherumTokenBalances() {
+export function GetEthereumTokenBalances() {
   logEthBalances();
   logTokenBalances();
 }

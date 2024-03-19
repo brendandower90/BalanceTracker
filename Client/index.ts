@@ -1,6 +1,7 @@
-import { GetEtherumTokenBalances } from "./Chains/Ethereum";
+import { GetEthereumTokenBalances } from "./Chains/Ethereum";
 import { GetXrplBalance } from "./Chains/XRPL";
+import { GetFlareTokenBalances } from "./Chains/Flare";
 
-
-GetEtherumTokenBalances();
-GetXrplBalance();
+// GetEthereumTokenBalances();
+// GetXrplBalance();
+GetFlareTokenBalances();
