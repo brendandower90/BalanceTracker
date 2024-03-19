@@ -5,18 +5,14 @@ interface TokenMap {
   [key: string]: string;
 }
 
-// Hard coded sample data
 const erc20Abi = require('erc-20-abi');
-
-
-
 
 const client = createPublicClient({
   chain: mainnet,
   transport: http(),
 });
 
-async function getEthBalances(myAddresses: string[]) {
+async function getEthBalanceForAddresses(myAddresses: string[]) {
   return await Promise.all(
     myAddresses.map((myAddress: string) =>
       client.getBalance({
@@ -26,22 +22,26 @@ async function getEthBalances(myAddresses: string[]) {
   );
 }
 
-async function getAllTokenBalances(myAddresses: string[], myTokens: TokenMap) {
+async function getTokenBalancesForAddresses(myAddresses: string[], myTokens: TokenMap) {
   return await Promise.all(
-    myAddresses.map((myAddress: string) => {
-      return Promise.all(
+    myAddresses.map(async (myAddress: string) => {
+      return await Promise.all(
         Object.keys(myTokens).map((tokenKey: string) => {
           const tokenAddress = myTokens[tokenKey];
-          return client.readContract({
-            address: tokenAddress as `0x${string}`,
-            abi: erc20Abi,
-            functionName: 'balanceOf',
-            args: [myAddress]
-          });
+          return getTokenBalance(myAddress, tokenAddress as `0x${string}`)
         })
       );
     })
   );
+}
+
+async function getTokenBalance(myAddress: string, tokenAddress: `0x${string}`) {
+  return await client.readContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [myAddress]
+  });
 }
 
 
@@ -52,7 +52,7 @@ async function logEthBalances() {
   ];
 
   try {
-    const ethBalances = await getEthBalances(myAddresses);
+    const ethBalances = await getEthBalanceForAddresses(myAddresses);
     ethBalances.forEach((balance, addressIndex) => {
       let formattedBalance = formatEther(balance);
       console.log(`${myAddresses[addressIndex]} - ETH: ${formattedBalance}`);
@@ -74,18 +74,18 @@ async function logTokenBalances() {
   }
 
   try {
-    const tokenBalances = await getAllTokenBalances(myAddresses, myTokens);
+    const tokenBalances = await getTokenBalancesForAddresses(myAddresses, myTokens);
     tokenBalances.forEach((tokenBalance, addressIndex) => {
         const address= myAddresses[addressIndex];
         
         tokenBalance.forEach((balance, tokenIndex) => {
           const tokenKey = Object.keys(myTokens)[tokenIndex];
-          console.log(`${myAddresses[addressIndex]} - ${tokenKey}: ${balance}`)
+          console.log(`${myAddresses[addressIndex]} - ${tokenKey}: ${balance}`);
         });
     });
   }
   catch (error) {
-    console.log("Error: ", error);
+    console.error("Error: ", error);
   }
 }
 
