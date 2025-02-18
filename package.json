@@ -5,13 +5,15 @@
   "main": "Client/index.js",
   "scripts": {},
   "keywords": [],
-  "author": "",
+  "author": "Nadnerb217",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.10.6",
-    "typescript": "^5.3.3"
+
+    "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@metaplex-foundation/mpl-token-metadata": "^1.2.0",
     "erc-20-abi": "^1.0.0",
     "node-lmdb": "^0.10.0",
     "viem": "^1.21.1",
